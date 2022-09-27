@@ -1,0 +1,129 @@
+Sub phase_3_code()
+
+'declare variables, string is text
+Dim ticker As String
+'this value will be exceptionally high compared to the others
+Dim total_stock_volume As LongLong
+'keep track of the location for each ticker in the summary table
+Dim summary_table_row As Integer
+'must determine the last non-empty row
+Dim lRow As Long
+'the following two variables contain whole numbers and decimals
+Dim open_price As Double
+Dim close_price As Double
+Dim yearly_change As Double
+Dim percent_change As Double
+'bonus section
+Dim maximum_value, minimum_value, maximum_volume As Double
+Dim maximum_ticker, minimum_ticker, volume_ticker As String
+
+'set column headers
+    Cells(1, 9).Value = "Ticker"
+    Cells(1, 10).Value = "Yearly Change"
+    Cells(1, 11).Value = "Percent Change"
+    Cells(1, 12).Value = "Total Stock Volume"
+    Cells(1, 15).Value = "Ticker"
+    Cells(1, 16).Value = "Value"
+    Cells(2, 14).Value = "Largest % Increase"
+    Cells(3, 14).Value = "Largest % Decrease"
+    Cells(4, 14).Value = "Largest Total Volume"
+    
+'set up integers for loop
+    summary_table_row = 2
+    open_Row = 2
+    total_stock_volume = 0
+    max_percent_increase = 0
+    minimum_value = 0
+    max_volume = 0
+    
+    'Find the last non-blank cell in column A(1)
+    lRow = Cells(Rows.Count, 1).End(xlUp).Row
+    
+    'beginning of the loop
+    For I = 2 To lRow
+            
+            ' if current cell is not equal to the next cell
+            If Cells(I, 1).Value <> Cells(I + 1, 1).Value Then
+            
+                    'set the stock name and initial values
+                    ticker = Cells(I, 1).Value
+                    close_price = Cells(I, 6).Value
+                    open_price = Cells(open_Row, 3).Value
+                    'insert formulas to calculate change over time
+                    yearly_change = close_price - open_price
+                    percent_change = yearly_change / open_price
+
+                    'Add to the total stock volume
+                    total_stock_volume = total_stock_volume + Cells(I, 7).Value
+                    
+                    ' Print the stock in the Summary Table
+                    'Range("I" & summary_table_row).Value = ticker
+                    Cells(summary_table_row, 9).Value = ticker
+                    
+                    'insert yearly_change values into summary
+                    Cells(summary_table_row, 10).Value = yearly_change
+                    Cells(summary_table_row, 10).NumberFormat = "0.00"
+                  
+                            If Cells(summary_table_row, 10).Value > 0 Then
+            
+                             'set positive values (increases in value) to green
+                            Cells(summary_table_row, 10).Interior.Color = RGB(0, 255, 0)
+                
+                            ElseIf Cells(summary_table_row, 10).Value < 0 Then
+                
+                            'set negative values (decreases on value) equal to red
+                             Cells(summary_table_row, 10).Interior.Color = RGB(255, 0, 0)
+                
+                            End If
+                            
+                    'Insert percent change into summary table
+                    Cells(summary_table_row, 11).Value = percent_change
+                    Cells(summary_table_row, 11).NumberFormat = "0.00%"
+   
+
+                    'Print the total_stock_volume to the Summary Table
+                    'Range("L" & total_stock_volume).Value = Brand_Total
+                    Cells(summary_table_row, 12).Value = total_stock_volume
+                    
+                    ' Add one to the summary table row
+                    summary_table_row = summary_table_row + 1
+                    
+                        If (percent_change > maximim_value) Then
+                                maximum_value = percent_change
+                                maximum_ticker = ticker
+                                
+                        ElseIf (percent_change < minimum_value) Then
+                                minimum_value = percent_change
+                                minimum_ticker = ticker
+                                
+                        End If
+                        
+                        If (total_stock_volume > maximum_volume) Then
+                                maximum_voume = total_stock_volume
+                                volume_ticker = ticker
+                        End If
+                
+                    ' Reset the Brand Total
+                    total_stock_volume = 0
+                    open_Row = I + 1
+
+            'If the cell following a row is the same ticker
+            Else
+            
+                ' Add to the Brand Total
+                total_stock_volume = total_stock_volume + Cells(I, 7).Value
+            
+            End If
+
+    Next I
+    
+'print the bonus values
+Cells(2, 15).Value = maximum_ticker
+Cells(3, 15).Value = minimum_ticker
+Cells(4, 15).Value = volume_ticker
+Cells(2, 16).Value = Format(maximum_value, "Percent")
+Cells(3, 16).Value = Format(minimum_value, "Percent")
+Cells(4, 16).Value = maximum_volume
+
+End Sub
+
